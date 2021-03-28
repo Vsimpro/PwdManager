@@ -7,5 +7,5 @@ In main menu, you should see the option to select either [R]ead or [W]rite. Choo
 
 If you use this on a smaller screen, due to formatting issues the banner will be printed with a different style.
 #
-###### Context:
+##### Context:
 This is a project I made to get into SQL Databases, so please treat it kindly ;). 
