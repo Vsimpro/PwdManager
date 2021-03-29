@@ -13,8 +13,20 @@ BLUE = "\033[94m"
 CYAN = "\033[96m"
 WHITE = "\033[97m"
 
-
-def banner():
+def refresh_screen():
+    os.system('cls' if os.name == 'nt' else 'clear')
+    size = f"{os.get_terminal_size()}"
+    terminal = int(size.split("=")[1].split(",")[0])
+    if terminal <= 100:
+        print(GRAY,"-- small monitor mode --",BLUE, end="")
+        print(f"""
+╔═╗┌─┐┌─┐┌─┐┬ ┬┌─┐┬─┐┌┬┐  
+╠═╝├─┤└─┐└─┐││││ │├┬┘ ││  
+╩  ┴ ┴└─┘└─┘└┴┘└─┘┴└──┴┘{CYAN}""",f"""
+╔╦╗╔═╗╔╗╔╔═╗╔═╗╔═╗╦═╗     
+║║║╠═╣║║║╠═╣║ ╦║╣ ╠╦╝     
+╩ ╩╩ ╩╝╚╝╩ ╩╚═╝╚═╝╩╚═  {YELLOW} -- by Vsim""")
+        return
     print(BLUE, end="")
     print("""                                                                   
  ███████████                                                                   █████     v1.0        
@@ -35,22 +47,6 @@ def banner():
     """,YELLOW ,"""                                                                                             
     -- Handcrafted with love, by Vsim.\n 
     """, WHITE)
-
-def refresh_screen():
-    os.system('cls' if os.name == 'nt' else 'clear')
-    size = f"{os.get_terminal_size()}"
-    terminal = int(size.split("=")[1].split(",")[0])
-    if terminal <= 100:
-        print(GRAY,"-- small monitor mode --",BLUE, end="")
-        print(f"""
-╔═╗┌─┐┌─┐┌─┐┬ ┬┌─┐┬─┐┌┬┐  
-╠═╝├─┤└─┐└─┐││││ │├┬┘ ││  
-╩  ┴ ┴└─┘└─┘└┴┘└─┘┴└──┴┘{CYAN}""",f"""
-╔╦╗╔═╗╔╗╔╔═╗╔═╗╔═╗╦═╗     
-║║║╠═╣║║║╠═╣║ ╦║╣ ╠╦╝     
-╩ ╩╩ ╩╝╚╝╩ ╩╚═╝╚═╝╩╚═  {YELLOW} -- by Vsim""")
-        return
-    banner()
 
 def check_connection(path):
     connection = None
@@ -83,7 +79,6 @@ def hash_decode(passw):
 
 def insert_data(service, password):
     global connection
-    global file
     password = hash_encode(password).decode()
     entry_data = f"INSERT INTO HASHED (Service, Password) VALUES ('{service}', '{password}');"
     try:
@@ -94,15 +89,13 @@ def insert_data(service, password):
 
 def read_data():
     refresh_screen()
-    select_data = "SELECT * FROM HASHED"
-    data = connection.execute(select_data)
+    data = connection.execute("SELECT * FROM HASHED")
     space = " "
     print(GREEN,"SERVICE:",space*24,"PASSWORD:",WHITE)
     for post in data:
         password = post[1].encode()
         service = post[0]  
         print(f" {post[0]}",space*7, space*(24 - (len(post[0]) )), f"{hash_decode(password)}")
-    
     input("\nPRESS ENTER TO GO BACK\n")
     main(False)    
 
@@ -113,8 +106,7 @@ def new_service():
         warning = f"{RED}INVALID INPUT: {service} might contain malicious contents.\n{YELLOW}PRESS ENTER TO TRY AGAIN\n"
         input(warning)
         new_service()
-    password = input(f"{GREEN}Password for the service:{WHITE} ")
-    insert_data(service, password)
+    insert_data(service, input(f"{GREEN}Password for the service:{WHITE} "))
     input("PRESS ENTER TO GO BACK\n")
     main(False)    
 
