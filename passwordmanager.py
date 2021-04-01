@@ -86,7 +86,7 @@ def remove_data():
         list_of_services.append(service)
     index = 0
     for i in list_of_services:
-        print(f"{WHITE}{list_of_services[index]} {GREEN}[{index}]")    
+        print(f"{WHITE}{list_of_services[index]} {GREEN}[{index + 1}]")    
         index += 1
 
     user = input(f"\n{GREEN}Select service number:{WHITE} ")
