@@ -77,6 +77,27 @@ def hash_decode(passw):
     hash_decoded = base64.b64decode(hash_decoded)
     return hash_decoded.decode()
 
+def remove_data():
+    refresh_screen()
+    list_of_services = []
+    data = connection.execute("SELECT * FROM HASHED")
+    for post in data:
+        service = post[0]
+        list_of_services.append(service)
+    index = 0
+    for i in list_of_services:
+        print(f"{WHITE}{list_of_services[index]} {GREEN}[{index}]")    
+        index += 1
+
+    user = input(f"\n{GREEN}Select service number:{WHITE} ")
+    query = f"DELETE FROM HASHED WHERE Service='{user}'"
+    try:
+        connection.execute(query)
+        return
+    except Exception as e:
+        input("Didn't find selected service.. return")
+        read_data()
+
 def insert_data(service, password):
     global connection
     password = hash_encode(password).decode()
@@ -96,8 +117,12 @@ def read_data():
         password = post[1].encode()
         service = post[0]  
         print(f" {post[0]}",space*7, space*(24 - (len(post[0]) )), f"{hash_decode(password)}")
-    input("\nPRESS ENTER TO GO BACK\n")
-    main(False)    
+    user = input("\n[D]elete an entry, or [R]eturn: ").replace(" ","").lower()
+    if user[0] == "r":
+        main(False)    
+    if user[0] == "d":
+        remove_data()
+    read_data()
 
 def new_service():
     refresh_screen()
@@ -106,6 +131,9 @@ def new_service():
         warning = f"{RED}INVALID INPUT: {service} might contain malicious contents.\n{YELLOW}PRESS ENTER TO TRY AGAIN\n"
         input(warning)
         new_service()
+    if service == "":
+        input("NO INPUT! Returning to main menu")
+        main(False)
     insert_data(service, input(f"{GREEN}Password for the service:{WHITE} "))
     input("PRESS ENTER TO GO BACK\n")
     main(False)    
@@ -120,7 +148,8 @@ def main(invalidinput):
         try:
             read_data()
         except Exception as e:
-            input(f"{RED}Either an error occured or database is empty! ENTER TO TRY AGAIN{WHITE}\n")
+            print(RED, e)
+            input(f"{RED}an error occured .. is the database empty? ENTER TO TRY AGAIN{WHITE}\n")
             main(False)
     if user[0] == "w":
         new_service()
